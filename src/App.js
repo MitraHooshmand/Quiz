@@ -1,6 +1,9 @@
 import { useEffect, useReducer } from "react";
 import Header from "./Header.js";
 import Main from "./Main.js";
+import Loader from "./Loader.js";
+import Error from "./Error.js";
+import StartText from "./StartText.js";
 // import { type } from "@testing-library/user-event/dist/type/index.js";
 const initialState = { questions: [], status: "loading" };
 function reducer(state, action) {
@@ -15,7 +18,8 @@ function reducer(state, action) {
   }
 }
 export default function App() {
-  const [state, dispatch] = useReducer(reducer, initialState);
+  const [{ questions, status }, dispatch] = useReducer(reducer, initialState);
+  const numQuestions = questions.length;
   useEffect(function () {
     fetch("http://localhost:8000/questions")
       .then((res) => res.json())
@@ -26,8 +30,9 @@ export default function App() {
     <div className="app">
       <Header />
       <Main>
-        <p>1/15</p>
-        <p>Question?</p>
+        {status === "loading" && <Loader />}
+        {status === "error" && <Error />}
+        {status === "ready" && <StartText numQuestions={numQuestions} />}
       </Main>
     </div>
   );
