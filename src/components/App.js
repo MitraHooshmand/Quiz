@@ -6,6 +6,7 @@ import Error from "./Error.js";
 import StartText from "./StartText.js";
 import Questions from "./Questions.js";
 import NextButton from "./NextButton.js";
+import Progress from "./Progress.js";
 
 // import { type } from "@testing-library/user-event/dist/type/index.js";
 const initialState = {
@@ -47,11 +48,12 @@ function reducer(state, action) {
   }
 }
 export default function App() {
-  const [{ questions, status, index, answer }, dispatch] = useReducer(
+  const [{ questions, status, index, answer, points }, dispatch] = useReducer(
     reducer,
     initialState
   );
   const numQuestions = questions.length;
+  const maxPoints = questions.reduce((prev, cur) => prev + cur.points, 0);
   useEffect(function () {
     fetch("http://localhost:8000/questions")
       .then((res) => res.json())
@@ -69,6 +71,13 @@ export default function App() {
         )}
         {status === "active" && (
           <>
+            <Progress
+              index={index}
+              numQuestions={numQuestions}
+              points={points}
+              maxPoints={maxPoints}
+              answer={answer}
+            />
             <Questions
               question={questions[index]}
               dispatch={dispatch}
